@@ -1,0 +1,26 @@
+<odoo>
+    <record id="view_order_form_inherit_custom" model="ir.ui.view">
+        <field name="name">sale.order.form.inherit.custom</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+
+            <!-- زر تطبيق القسيمة -->
+            <xpath expr="//header" position="inside">
+                <button name="apply_coupon"
+                        string="Apply Coupon"
+                        type="object"
+                        class="btn-primary"
+                        invisible="not coupon_id"/>
+            </xpath>
+
+            <!-- إضافة الحقول الخاصة بالقالب والقسيمة -->
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="template_id"/>
+                <field name="coupon_id" invisible="state != 'draft'"/>
+            </xpath>
+
+
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="bts">
+    <option name="configFilePath" value="$PROJECT_DIR$/.docker/odoo.conf" />
+    <option name="moduleList" value="&lt;ArrayList&gt;&lt;item&gt;&lt;modulePath&gt;&lt;path&gt;&lt;/path&gt;&lt;/modulePath&gt;&lt;name&gt;custom_quotations&lt;/name&gt;&lt;/item&gt;&lt;/ArrayList&gt;" />
+    <option name="modulePathList" value="&lt;ArrayList&gt;&lt;item&gt;&lt;path&gt;&lt;/path&gt;&lt;/item&gt;&lt;/ArrayList&gt;" />
+    <option name="modulePathListLoaded" value="true" />
+    <option name="selectedDatabase" value="odoo.conf not found" />
+    <option name="selectedModulePathList" value="&lt;ArrayList&gt;&lt;item&gt;&lt;path&gt;&lt;/path&gt;&lt;/item&gt;&lt;/ArrayList&gt;" />
+  </component>
+</project>
