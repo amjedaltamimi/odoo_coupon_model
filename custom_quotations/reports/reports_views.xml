@@ -1,0 +1,64 @@
+<odoo>
+    <data>
+
+
+        <record id="action_report_coupon" model="ir.actions.report">
+            <field name="name">Coupon Report</field>
+            <field name="model">coupon</field>
+            <field name="report_type">qweb-pdf</field>
+
+            <field name="binding_model_id" ref="model_coupon"/>
+            <field name="report_name">custom_quotations.coupon_REPORT_TEMPLATE</field>
+            <field name="report_file">custom_quotations.coupon_REPORT_TEMPLATE</field>
+            <!--    عشان يظهر خارج الاكشن -->
+            <field name="binding_type">report</field>
+        </record>
+        <template id="coupon_REPORT_TEMPLATE">
+            <t t-call="web.html_container">
+                <t t-call="web.external_layout">
+                    <t t-foreach="docs" t-as="o">
+                        <div class="page">
+                            <h2 style="text-align:center;">Coupon Report</h2>
+                            <hr/>
+
+                            <p>
+                                <strong>Coupon Code:</strong>
+                                <span t-field="o.name"/>
+                            </p>
+                            <p>
+                                <strong>Customer:</strong>
+                                <span t-field="o.partner_id"/>
+                            </p>
+                            <p>
+                                <strong>Value:</strong>
+                                <span t-field="o.value"/>
+                            </p>
+                            <p>
+                                <strong>Usage Limit:</strong>
+                                <span t-field="o.usage_limit"/>
+                            </p>
+                            <p>
+                                <strong>Used Count:</strong>
+                                <span t-field="o.used_count"/>
+                            </p>
+                            <p>
+                                <strong>Days Remaining:</strong>
+                                <span t-field="o.days_remaining"/>
+                            </p>
+                            <p>
+                                <strong>State:</strong>
+                                <span t-field="o.state"/>
+                            </p>
+                            <p>
+                                <strong>Date Availability:</strong>
+                                <span t-field="o.date_availability"/>
+                            </p>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+
+
+    </data>
+</odoo>

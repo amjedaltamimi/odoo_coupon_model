@@ -1,24 +1,47 @@
 <odoo>
-    <record id="view_order_form_inherit_custom" model="ir.ui.view">
-        <field name="name">sale.order.form.inherit.custom</field>
+    <record id="view_order_form_inherit_coupon" model="ir.ui.view">
+        <field name="name">sale.order.form.inherit.coupon</field>
         <field name="model">sale.order</field>
         <field name="inherit_id" ref="sale.view_order_form"/>
         <field name="arch" type="xml">
 
-            <!-- زر تطبيق القسيمة -->
+
+            <xpath expr="//header/button[@name='action_confirm'][1]" position="attributes">
+                <!-- زر Confirm يظهر للادمن دائمًا، للمستخدمين العاديين يظهر فقط إذا لم يوجد كوبون -->
+                <attribute name="invisible">coupon_id != False</attribute>
+
+            </xpath>
+
             <xpath expr="//header" position="inside">
                 <button name="apply_coupon"
                         string="Apply Coupon"
                         type="object"
-                        class="btn-primary"
-                        invisible="not coupon_id"/>
+                        class="btn btn-primary"
+                        groups="custom_quotations.approve"
+                        invisible="coupon_id == False or state != 'draft'"/>
             </xpath>
-
-            <!-- إضافة الحقول الخاصة بالقالب والقسيمة -->
             <xpath expr="//field[@name='partner_id']" position="after">
                 <field name="template_id"/>
-                <field name="coupon_id" invisible="state != 'draft'"/>
+                <field name="coupon_id" options="{'no_create': True}"/>
             </xpath>
+
+            <xpath expr="//field[@name='state']" position="replace">
+                <field name="state"
+                       widget="statusbar"
+                       statusbar_visible="draft,applied_coupon,sent,sale,done,cancel"/>
+            </xpath>
+
+            <sheet position="inside">
+
+                <div style="text-align: right; width: 100%; margin-top: 5px; font-weight:bolder ;font-size: 19px;color: red;
+    font-weight: bold;
+   ">
+                    <field name="total_before_coupon" readonly="1"/>
+                </div>
+            </sheet>
+
+
+
 
 
         </field>

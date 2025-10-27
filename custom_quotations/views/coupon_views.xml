@@ -1,7 +1,7 @@
 <odoo>
     <record id="view_coupon_list" model="ir.ui.view">
-        <field name="name">coupon.coupon.list</field>
-        <field name="model">coupon.coupon</field>
+        <field name="name">coupon.list</field>
+        <field name="model">coupon</field>
         <field name="arch" type="xml">
             <list>
                 <field name="name"/>
@@ -16,11 +16,13 @@
         </field>
     </record>
 
+
     <record id="view_coupon_form" model="ir.ui.view">
-        <field name="name">coupon.coupon.form</field>
-        <field name="model">coupon.coupon</field>
+        <field name="name">coupon.form</field>
+        <field name="model">coupon</field>
         <field name="arch" type="xml">
             <form>
+  
                 <sheet>
                     <div class="oe_title">
                         <labeL for="name">Coupon code</labeL>
@@ -46,17 +48,49 @@
                             <field name="date_availability"/>
                         </group>
                     </group>
+
                 </sheet>
             </form>
         </field>
     </record>
 
+
+<!--    search by friend name for person that have coupon -->
+<record id="coupon_search_view" model="ir.ui.view">
+   <field name="name">coupon.search.view</field>
+   <field name="model">coupon</field>
+    <field name="arch" type="xml">
+        <search string="">
+      <field name="partner_id" />
+            <filter name="search_by_coupon_value" string=" value >= 50" domain="[('value','>=','50')]"/>
+            <filter name="group_by_state" string="State" context="{'group_by':'state'}" />
+    </search>
+   </field>
+</record>
+
+
+<record id="search2" model="ir.ui.view">
+   <field name="name">search2</field>
+   <field name="model">coupon</field>
+    <field name="arch" type="xml">
+        <search string="Filter2">
+      <field name="value" string="string" />
+            <filter name="value" string="" domain="[('value','>=','50')]" />
+    </search>
+   </field>
+</record>
     <record id="action_coupon" model="ir.actions.act_window">
         <field name="name">Coupons</field>
-        <field name="res_model">coupon.coupon</field>
+        <field name="res_model">coupon</field>
         <field name="view_mode">list,form</field>
     </record>
 
 
-    <menuitem id="menu_coupon" name="Coupons" parent="custom_quotation" action="action_coupon" sequence="10"/>
+    <menuitem id="menu_coupon"
+              name="Coupons"
+              parent="custom_quotation"
+              action="action_coupon"
+              sequence="10"
+              groups="custom_quotations.approve"
+    />
 </odoo>

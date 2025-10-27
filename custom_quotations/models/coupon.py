@@ -5,7 +5,7 @@ from odoo.exceptions import ValidationError
 
 
 class Coupon(models.Model):
-    _name = 'coupon.coupon'
+    _name = 'coupon'
     _description = 'Discount Coupon'
 
     name = fields.Char(string='Coupon Code', required=True, copy=False)
@@ -19,6 +19,7 @@ class Coupon(models.Model):
     ], string='Status', default='active', readonly=True)
 
     template_ids = fields.Many2many('quotation.template', string="Applicable Templates")
+
 
     _sql_constraints = [
         ('unique_code', 'unique(name)', 'Coupon code must be unique!')
@@ -42,4 +43,8 @@ class Coupon(models.Model):
             if rec.date_availability<today:
                 raise ValidationError("you cant set availability in past")
 
-
+    @api.constrains("value")
+    def _cjeck_coupon_value(self):
+        for rec in self :
+            if rec.value<0:
+                raise ValidationError("value mustn't  be smaller than zero ")

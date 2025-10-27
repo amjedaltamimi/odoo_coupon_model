@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data >
+
+        <record id="temp_sequence" model="ir.sequence">
+            <field name="name">temp_sequence</field>
+<!--            id of sequence-->
+            <field name="code">temp.seq</field>
+            <field name="prefix">TEM</field>
+            <field name="padding">7</field>
+        </record>
+
+    </data>
+</odoo>

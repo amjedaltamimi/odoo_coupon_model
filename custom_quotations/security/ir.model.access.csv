@@ -1,7 +1,7 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_coupon,access_coupon,model_coupon_coupon,base.group_user,1,1,1,1
-access_quotation_template,access_quotation_template,model_quotation_template,base.group_user,1,1,1,1
-access_sale_order,access_sale_order,model_sale_order,base.group_user,1,1,1,1
-access_quotation_template_line_user,access_quotation_template_line_user,model_quotation_template_line,base.group_user,1,1,1,1
+access_coupon,access_coupon,model_coupon,custom_quotations.approve,1,1,1,1
+access_quotation_template,access_quotation_template,model_quotation_template,custom_quotations.approve,1,1,1,1
+access_sale_order,access_sale_order,model_sale_order,custom_quotations.approve,1,1,1,1
+access_quotation_template_line_user,access_quotation_template_line_user,model_quotation_template_line,custom_quotations.approve,1,1,1,1
 
 

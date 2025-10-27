@@ -6,10 +6,24 @@
             <form>
                 <header>
                     <button name="generate_quotation" string="Generate Quotation" type="object" class="oe_highlight"/>
+
+
+                    <div class="oe_button_box">
+                        <button name="action_open_quotations"
+                                type="object"
+                                icon="fa-user"
+                                string="quotations">
+
+                        </button>
+                    </div>
                 </header>
                 <sheet>
+
                     <group>
-                        <field name="name"/>
+                        <h1 style="color:blue">
+                            <field name="name"/>
+                        </h1>
+
                     </group>
                     <notebook>
                         <page string="Template Lines">
@@ -44,5 +58,6 @@
         <field name="view_mode">list,form</field>
     </record>
 
- <menuitem id="menu_quotation_template" name="Quotation Templates" parent="custom_quotation" action="action_quotation_template" sequence="1"/>
+    <menuitem id="menu_quotation_template" name="Quotation Templates" parent="custom_quotation"
+              action="action_quotation_template" sequence="1"/>
 </odoo>

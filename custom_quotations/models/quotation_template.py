@@ -1,14 +1,40 @@
 # custom_quotations/models/quotation_template.py
+from email.policy import default
+
 from odoo import models, fields, api
 
 class QuotationTemplate(models.Model):
     _name = 'quotation.template'
     _description = 'Quotation Template'
 
-    name = fields.Char(string='Template Name', required=True)
+    name = fields.Char(string='Template Name' ,readonly=True,default="New")
     template_line_ids = fields.One2many('quotation.template.line', 'template_id', string='Template Lines')
+    sales_order_count = fields.Integer(
+        string="Sales Orders",
+        compute="_compute_sales_order_count")
 
+    def _compute_sales_order_count(self):
+        for template in self:
+            template.sales_order_count = self.env['sale.order'].search_count([('template_id', '=', template.id)])
 
+    # def action_view_sales_orders(self):
+    #     self.ensure_one()
+    #     return {
+    #         'name': 'Sales Orders',
+    #         'type': 'ir.actions.act_window',
+    #         'res_model': 'sale.order',
+    #         'view_mode': 'list,form',
+    #         'domain': [('template_id', '=', self.id)],
+    #     }
+    def action_open_quotations(self):
+        self.ensure_one()
+        return {
+                'name': 'Sales Orders',
+                'type': 'ir.actions.act_window',
+                'res_model': 'sale.order',
+                'view_mode': 'list,form',
+                'domain': [('template_id', '=', self.id)],
+            }
     def generate_quotation(self):
         self.ensure_one()
 
@@ -36,6 +62,12 @@ class QuotationTemplate(models.Model):
             'view_mode': 'form',
             'target': 'current',
         }
+    @api.model
+    def create(self,vals):
+        res=super(QuotationTemplate,self).create(vals)
+        if res.name=="New":
+          res.name= self.env['ir.sequence'].next_by_code("temp.seq")
+        return res
 
 class QuotationTemplateLine(models.Model):
     _name = 'quotation.template.line'

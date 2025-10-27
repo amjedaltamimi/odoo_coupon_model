@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <!-- مجموعة صلاحيات الموافقة على الكوبون -->
+    <record id="approve" model="res.groups">
+        <field name="name">Can Approve Applied Coupon</field>
+         <field name="implied_ids" eval="[(4, ref('sales_team.group_sale_manager'))]"/>
+
+    </record>
+
+</odoo>
