@@ -1,96 +1,88 @@
 <odoo>
+    <!-- List View للكوبونات -->
     <record id="view_coupon_list" model="ir.ui.view">
         <field name="name">coupon.list</field>
         <field name="model">coupon</field>
         <field name="arch" type="xml">
             <list>
                 <field name="name"/>
-                <field name="partner_id"/>
                 <field name="value"/>
                 <field name="usage_limit"/>
-                <field name="used_count"/>
                 <field name="state"/>
                 <field name="date_availability"/>
-                <field name="days_remaining"/>
+                <field name="coupon_line_ids" widget="many2many_tags" options="{'no_create': True}"
+                       string="Assigned Partners"/>
             </list>
         </field>
     </record>
 
-
+    <!-- Form View للكوبون -->
     <record id="view_coupon_form" model="ir.ui.view">
         <field name="name">coupon.form</field>
         <field name="model">coupon</field>
         <field name="arch" type="xml">
             <form>
-  
                 <sheet>
                     <div class="oe_title">
-                        <labeL for="name">Coupon code</labeL>
+                        <label for="name">Coupon Code</label>
                         <h2>
                             <field name="name"/>
                         </h2>
                     </div>
                     <group>
-
-                        <group>
-
-
-                            <field name="partner_id" widget="many2many_tags"/>
-                            <field name="value"/>
-                            <field name="usage_limit"/>
-                            <field name="used_count"/>
-                            <field name="days_remaining"/>
-
-                        </group>
-                        <group string="Applicable For">
-                            <field name="state"/>
-                            <field name="template_ids" widget="many2many_tags"/>
-                            <field name="date_availability"/>
-                        </group>
+                        <field name="value"/>
+                        <field name="usage_limit"/>
+                        <field name="state" readonly="1"/>
+                        <field name="date_availability"/>
+                        <field name="template_ids" widget="many2many_tags"/>
+                    </group>
+                    <group string="Assign Coupon to Partners">
+                        <field name="partner_ids_temp" widget="many2many_tags"/>
+                        <button name="action_assign_coupon" string="Assign Coupon" type="object" class="btn-primary"/>
                     </group>
 
+                    <notebook>
+                        <page string="Assigned Partners">
+                            <field name="coupon_line_ids" readonly="1">
+                                <list>
+                                    <field name="partner_id"/>
+                                    <field name="remaining_value" readonly="1"/>
+                                    <field name="used_count" readonly="1"/>
+
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
                 </sheet>
             </form>
         </field>
     </record>
 
+    <!-- Search View للكوبون -->
+    <record id="coupon_search_view" model="ir.ui.view">
+        <field name="name">coupon.search.view</field>
+        <field name="model">coupon</field>
+        <field name="arch" type="xml">
+            <search string="Search Coupons">
+                <field name="name"/>
+                <field name="value"/>
+                <filter name="group_by_state" string="Group by State" context="{'group_by':'state'}"/>
+            </search>
+        </field>
+    </record>
 
-<!--    search by friend name for person that have coupon -->
-<record id="coupon_search_view" model="ir.ui.view">
-   <field name="name">coupon.search.view</field>
-   <field name="model">coupon</field>
-    <field name="arch" type="xml">
-        <search string="">
-      <field name="partner_id" />
-            <filter name="search_by_coupon_value" string=" value >= 50" domain="[('value','>=','50')]"/>
-            <filter name="group_by_state" string="State" context="{'group_by':'state'}" />
-    </search>
-   </field>
-</record>
-
-
-<record id="search2" model="ir.ui.view">
-   <field name="name">search2</field>
-   <field name="model">coupon</field>
-    <field name="arch" type="xml">
-        <search string="Filter2">
-      <field name="value" string="string" />
-            <filter name="value" string="" domain="[('value','>=','50')]" />
-    </search>
-   </field>
-</record>
+    <!-- Action Window -->
     <record id="action_coupon" model="ir.actions.act_window">
         <field name="name">Coupons</field>
         <field name="res_model">coupon</field>
         <field name="view_mode">list,form</field>
     </record>
 
-
+    <!-- Menu Item -->
     <menuitem id="menu_coupon"
               name="Coupons"
               parent="custom_quotation"
               action="action_coupon"
               sequence="10"
-              groups="custom_quotations.approve"
     />
 </odoo>

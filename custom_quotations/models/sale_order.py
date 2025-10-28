@@ -28,11 +28,10 @@ class SaleOrder(models.Model):
     @api.depends('amount_untaxed', 'order_line.discount')
     def _compute_total_before_coupon(self):
         for order in self:
-            total = 0.0
-            for line in order.order_line:
-                if not line._is_delivery():
-
-                    total += line.price_unit * line.product_uom_qty
+            total = sum(
+                line.price_unit * line.product_uom_qty
+                for line in order.order_line if not line._is_delivery()
+            )
             order.total_before_coupon = total
 
     def apply_coupon(self):
@@ -40,40 +39,37 @@ class SaleOrder(models.Model):
             if not order.coupon_id:
                 raise UserError("Please select a coupon first.")
 
-            # Save total before applying coupon
-            order._compute_total_before_coupon()
-
             coupon = order.coupon_id
-            if order.partner_id not in coupon.partner_id:
-                raise UserError("You are not allowed to use this coupon.")
 
-            if coupon.state == 'expired':
-                raise UserError(f"Sorry, your coupon with code {coupon.name} is expired.")
+            coupon_line = self.env['coupon.line'].search([
+                ('coupon_id', '=', coupon.id),
+                ('partner_id', '=', order.partner_id.id)
+            ], limit=1)
 
-            if coupon.used_count >= coupon.usage_limit:
-                raise UserError("This coupon has reached its usage limit.")
+            if not coupon_line:
+                raise ValidationError("You are not allowed to use this coupon.")
 
-            if coupon.days_remaining == 0:
-                raise ValidationError("This coupon availability has ended!")
+            if coupon.state == 'expired' or (coupon.date_availability and coupon.date_availability < fields.Date.today()):
+                raise ValidationError(f"Sorry, coupon {coupon.name} is expired.")
+
+            if coupon_line.remaining_value <= 0:
+                raise ValidationError("Your coupon balance is 0, you can't use it anymore.")
 
             if order.template_id and coupon.template_ids and order.template_id not in coupon.template_ids:
-                raise UserError("This coupon is not valid for the selected quotation template.")
+                raise ValidationError("This coupon is not valid for the selected quotation template.")
 
             if order.amount_untaxed <= 0:
-                raise UserError("Cannot apply coupon to an empty or zero-value quotation.")
+                raise ValidationError("Cannot apply coupon to an empty quotation.")
 
-            if coupon.value >= order.amount_untaxed:
-                raise UserError("Coupon value cannot exceed the total quotation amount.")
+            discount_amount = min(coupon_line.remaining_value, order.amount_untaxed)
+            discount_percentage = (discount_amount / order.amount_untaxed) * 100
 
-            discount_percentage = (coupon.value / order.amount_untaxed) * 100
 
             for line in order.order_line:
                 if not line._is_delivery():
                     line.discount = discount_percentage
 
-            coupon.used_count += 1
-            if coupon.used_count >= coupon.usage_limit:
-                coupon.state = 'expired'
+            coupon_line.use_coupon(amount=discount_amount, partner=order.partner_id)
 
             order.state = 'applied_coupon'
 

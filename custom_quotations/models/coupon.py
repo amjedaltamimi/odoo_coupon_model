@@ -27,7 +27,34 @@ class Coupon(models.Model):
 
     date_availability = fields.Date(string="End coupon")
     days_remaining = fields.Integer(string="Reminder days", compute="_compute_days_remaining", store=False)
+    coupon_line_ids = fields.One2many('coupon.line', 'coupon_id', string="Assigned Coupons")
+    # حقل مؤقت لاختيار الأشخاص قبل إنشاء coupon.line
+    # حقل مؤقت لاختيار الأشخاص قبل إنشاء coupon.line
+    partner_ids_temp = fields.Many2many(
+        'res.partner',
+        'coupon_partner_temp_rel',
+        'coupon_id',
+        'partner_id',
+        string="Select Partners"
+    )
 
+    coupon_line_ids = fields.One2many('coupon.line', 'coupon_id', string="Assigned Coupons")
+
+    def action_assign_coupon(self):
+        for rec in self:
+            for partner in rec.partner_ids_temp:
+                # إذا الشخص مش موجود مسبقًا في Assigned Partners
+                existing_line = self.env['coupon.line'].search([
+                    ('coupon_id', '=', rec.id),
+                    ('partner_id', '=', partner.id)
+                ], limit=1)
+                if not existing_line:
+                    self.env['coupon.line'].create({
+                        'coupon_id': rec.id,
+                        'partner_id': partner.id,
+                        'remaining_value': rec.value,
+                    })
+        rec.partner_ids_temp = False
     @api.depends('date_availability')
     def _compute_days_remaining(self):
         for rec in self:
@@ -48,3 +75,41 @@ class Coupon(models.Model):
         for rec in self :
             if rec.value<0:
                 raise ValidationError("value mustn't  be smaller than zero ")
+class CouponLine (models.Model):
+    _name = 'coupon.line'
+    _description = 'Coupon for Partner'
+
+    coupon_id = fields.Many2one('coupon', string="Coupon", required=True, ondelete='cascade')
+    partner_id = fields.Many2one('res.partner', string='Assigned To', required=True)
+    remaining_value = fields.Float(string='Remaining Value', required=True)
+    used_count = fields.Integer(string='Used Count', default=0)
+
+    @api.model
+    def create_coupon_lines(self, coupon_id, partners):
+        """Create coupon lines for multiple partners"""
+        coupon = self.env['coupon'].browse(coupon_id)
+
+        lines = []
+        for partner in partners:
+            lines.append(self.create({
+                'coupon_id': coupon.id,
+                'partner_id': partner.id,
+                'remaining_value': coupon.value
+            }))
+        return lines
+
+    def use_coupon(self, amount, partner=None):
+        """Use a certain amount of coupon for a specific partner"""
+        for line in self:
+            # تحقق من صاحب الكوبون إذا تم تمريره
+            if partner and line.partner_id.id != partner.id:
+                raise ValidationError(f"You are not allowed to use this coupon. ({partner.name} is not assigned)")
+
+            if line.remaining_value <= 0:
+                raise ValidationError(f"{line.partner_id.name}'s coupon has no remaining balance.")
+
+            if line.remaining_value < amount:
+                raise ValidationError(f"{line.partner_id.name} does not have enough coupon balance.")
+
+            line.remaining_value -= amount
+            line.used_count += 1
