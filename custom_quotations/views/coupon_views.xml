@@ -7,7 +7,8 @@
             <list>
                 <field name="name"/>
                 <field name="value"/>
-                <field name="usage_limit"/>
+                <field name="usage_limit" string="Number of Allowed Users"
+                       help="Maximum number of partners that can receive this coupon."/>
                 <field name="state"/>
                 <field name="date_availability"/>
                 <field name="coupon_line_ids" widget="many2many_tags" options="{'no_create': True}"
@@ -31,7 +32,9 @@
                     </div>
                     <group>
                         <field name="value"/>
-                        <field name="usage_limit"/>
+                        <field name="usage_limit" string="Number of Allowed Users"
+                       help="Maximum number of partners that can receive this coupon."/>
+                        <field name="state"/>
                         <field name="state" readonly="1"/>
                         <field name="date_availability"/>
                         <field name="template_ids" widget="many2many_tags"/>
@@ -47,7 +50,7 @@
                                 <list>
                                     <field name="partner_id"/>
                                     <field name="remaining_value" readonly="1"/>
-                                    <field name="used_count" readonly="1"/>
+                                    <!--                                    <field name="used_count" readonly="1"/>-->
 
                                 </list>
                             </field>

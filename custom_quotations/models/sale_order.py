@@ -60,6 +60,8 @@ class SaleOrder(models.Model):
 
             if order.amount_untaxed <= 0:
                 raise ValidationError("Cannot apply coupon to an empty quotation.")
+            if order.amount_untaxed < 500:
+                raise ValidationError("Coupon cannot be applied: the order total must be at least 500.")
 
             discount_amount = min(coupon_line.remaining_value, order.amount_untaxed)
             discount_percentage = (discount_amount / order.amount_untaxed) * 100

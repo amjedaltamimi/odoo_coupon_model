@@ -9,7 +9,12 @@
             <xpath expr="//header/button[@name='action_confirm'][1]" position="attributes">
                 <attribute name="invisible">coupon_id != False</attribute>
             </xpath>
-
+            <xpath expr="//header/button[@name='action_confirm'][1]" position="attributes">
+                <attribute name="invisible">coupon_id != False</attribute>
+            </xpath>
+            <xpath expr="//header/button[@name='action_confirm'][1]" position="attributes">
+                <attribute name="groups">!custom_quotations.approve</attribute>
+            </xpath>
             <!-- زر Apply Coupon -->
             <xpath expr="//header" position="inside">
                 <button name="apply_coupon"

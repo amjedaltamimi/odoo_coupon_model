@@ -42,6 +42,14 @@ class Coupon(models.Model):
 
     def action_assign_coupon(self):
         for rec in self:
+            current_users = len(rec.coupon_line_ids)
+            allow_user_number = rec.usage_limit
+            if current_users >= allow_user_number:
+                raise ValidationError(
+                    f"The coupon '{rec.name}' has already beem assigned to {current_users} "
+                    f" Maximum allowed users :{allow_user_number} "
+                )
+
             for partner in rec.partner_ids_temp:
                 # إذا الشخص مش موجود مسبقًا في Assigned Partners
                 existing_line = self.env['coupon.line'].search([
@@ -54,6 +62,7 @@ class Coupon(models.Model):
                         'partner_id': partner.id,
                         'remaining_value': rec.value,
                     })
+
         rec.partner_ids_temp = False
     @api.depends('date_availability')
     def _compute_days_remaining(self):
@@ -81,7 +90,11 @@ class CouponLine (models.Model):
 
     coupon_id = fields.Many2one('coupon', string="Coupon", required=True, ondelete='cascade')
     partner_id = fields.Many2one('res.partner', string='Assigned To', required=True)
-    remaining_value = fields.Float(string='Remaining Value', required=True)
+    remaining_value = fields.Float(
+        string='Remaining Value',
+        compute='_compute_remaining_value',
+        store=True
+    )
     used_count = fields.Integer(string='Used Count', default=0)
 
     @api.model
@@ -89,12 +102,19 @@ class CouponLine (models.Model):
         """Create coupon lines for multiple partners"""
         coupon = self.env['coupon'].browse(coupon_id)
 
+        @api.depends('total_used', 'coupon_id.value')
+        def _compute_remaining_value(self):
+            for line in self:
+                if line.coupon_id:
+                    line.remaining_value = line.coupon_id.value - line.total_used
+                else:
+                    line.remaining_value = 0
         lines = []
         for partner in partners:
             lines.append(self.create({
                 'coupon_id': coupon.id,
                 'partner_id': partner.id,
-                'remaining_value': coupon.value
+                'remaining_value': CouponLine.remaining_value
             }))
         return lines
 

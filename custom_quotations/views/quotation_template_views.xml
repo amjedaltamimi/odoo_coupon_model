@@ -4,21 +4,19 @@
         <field name="model">quotation.template</field>
         <field name="arch" type="xml">
             <form>
+               
                 <header>
                     <button name="generate_quotation" string="Generate Quotation" type="object" class="oe_highlight"/>
 
 
-                    <div class="oe_button_box">
-                        <button name="action_open_quotations"
-                                type="object"
-                                icon="fa-user"
-                                string="quotations">
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_open_quotations" type="object" icon="fa-user" string="quotations"
+                                widget="statinfo" class="oe_stat_button">
 
                         </button>
                     </div>
-                </header>
-                <sheet>
-
                     <group>
                         <h1 style="color:blue">
                             <field name="name"/>

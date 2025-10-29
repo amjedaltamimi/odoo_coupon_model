@@ -23,11 +23,11 @@ class SaleOrderLine(models.Model):
     @api.depends('price_unit', 'product_uom_qty')
     def _compute_total_before_discount(self):
         for line in self:
-            # المجموع قبل الخصم = السعر * الكمية
-            line.total_before_discount = (line.price_unit or 0.0) * (line.product_uom_qty or 0.0)
+
+            line.total_before_discount = (round((line.price_unit or 0.0) * (line.product_uom_qty or 0.0), 2))
 
     @api.depends('total_before_discount', 'price_subtotal')
     def _compute_discount_difference(self):
         for line in self:
             # الفرق بين السعر قبل الخصم وبعد الخصم
-            line.discount_difference = (line.total_before_discount or 0.0) - (line.price_subtotal or 0.0)
+            line.discount_difference = round((line.total_before_discount or 0.0) - (line.price_subtotal or 0.0),2)
